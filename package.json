@@ -27,5 +27,9 @@
     "prisma": "^7.10.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "prisma@7.10.1": true,
+    "@prisma/engines@7.10.1": true
   }
 }
