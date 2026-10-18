@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Direction {
+  INCOMING
+  OUTGOING
+}
+
+model LineUser {
+  id            String    @id
+  displayName   String
+  pictureUrl    String?
+  lastMessageAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  messages      Message[]
+}
+
+model Message {
+  id            String    @id @default(cuid())
+  lineUserId    String
+  lineUser      LineUser  @relation(fields: [lineUserId], references: [id], onDelete: Cascade)
+  direction     Direction
+  type          String    @default("text")
+  text          String
+  lineMessageId String?   @unique
+  createdAt     DateTime  @default(now())
+
+  @@index([lineUserId, createdAt])
+}
