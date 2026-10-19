@@ -66,6 +66,19 @@ export default function Chat() {
     };
   }, [selectedId]);
 
+  const selectedUnread =
+    users.find((user) => user.id === selectedId)?.unreadCount ?? 0;
+
+  // mark as read when a conversation is opened, or when new messages
+  // arrive while it is open
+  useEffect(() => {
+    if (!selectedId || selectedUnread === 0) return;
+
+    fetch(`/api/users/${selectedId}/read`, { method: "POST" }).catch((err) =>
+      console.error(err),
+    );
+  }, [selectedId, selectedUnread]);
+
   function selectUser(id: string) {
     if (id === selectedId) return;
     setMessages([]);

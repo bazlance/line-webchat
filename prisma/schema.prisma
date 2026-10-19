@@ -17,6 +17,7 @@ model LineUser {
   displayName   String
   pictureUrl    String?
   lastMessageAt DateTime  @default(now())
+  unreadCount   Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   messages      Message[]

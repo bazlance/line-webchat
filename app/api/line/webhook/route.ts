@@ -1,4 +1,5 @@
 import type { webhook } from "@line/bot-sdk";
+import { Prisma } from "@/app/generated/prisma/client";
 import { lineClient, verifySignature } from "@/lib/line";
 import { prisma } from "@/lib/prisma";
 
@@ -40,22 +41,34 @@ async function handleEvent(event: webhook.Event) {
   const message = event.message;
   const text = message.type === "text" ? message.text : `[${message.type}]`;
 
-  await prisma.message.upsert({
-    where: { lineMessageId: message.id },
-    update: {},
-    create: {
-      lineUserId: userId,
-      direction: "INCOMING",
-      type: message.type,
-      text,
-      lineMessageId: message.id,
-      createdAt: new Date(event.timestamp),
-    },
-  });
+  try {
+    await prisma.message.create({
+      data: {
+        lineUserId: userId,
+        direction: "INCOMING",
+        type: message.type,
+        text,
+        lineMessageId: message.id,
+        createdAt: new Date(event.timestamp),
+      },
+    });
+  } catch (err) {
+    // LINE may resend the same event; skip messages we already saved
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return;
+    }
+    throw err;
+  }
 
   await prisma.lineUser.update({
     where: { id: userId },
-    data: { lastMessageAt: new Date(event.timestamp) },
+    data: {
+      lastMessageAt: new Date(event.timestamp),
+      unreadCount: { increment: 1 },
+    },
   });
 }
 

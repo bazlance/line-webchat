@@ -12,6 +12,7 @@ A web chat for a LINE Official Account. Messages that users send to the OA show 
 - Select a user and reply to them from the webchat
 - New messages appear automatically (polling every 3 seconds)
 - Works on desktop and mobile
+- Unread message count for each user
 
 ## Tech stack
 

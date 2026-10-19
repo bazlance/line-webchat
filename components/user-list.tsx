@@ -34,6 +34,8 @@ export default function UserList({
         const preview = last
           ? `${last.direction === "OUTGOING" ? "You: " : ""}${last.text}`
           : "";
+        // the open conversation is being read, so don't show a badge for it
+        const unread = user.id === selectedId ? 0 : user.unreadCount;
 
         return (
           <li key={user.id}>
@@ -46,15 +48,26 @@ export default function UserList({
             >
               <Avatar name={user.displayName} pictureUrl={user.pictureUrl} />
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="truncate font-medium">
-                    {user.displayName}
+                <span className="block truncate font-medium">
+                  {user.displayName}
+                </span>
+                <p
+                  className={`truncate text-sm ${
+                    unread > 0 ? "font-medium text-gray-900" : "text-gray-500"
+                  }`}
+                >
+                  {preview}
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span className="text-xs text-gray-400">
+                  {formatListTime(user.lastMessageAt)}
+                </span>
+                {unread > 0 && (
+                  <span className="min-w-5 rounded-full bg-[#06C755] px-1.5 text-center text-xs leading-5 font-semibold text-white">
+                    {unread > 99 ? "99+" : unread}
                   </span>
-                  <span className="shrink-0 text-xs text-gray-400">
-                    {formatListTime(user.lastMessageAt)}
-                  </span>
-                </div>
-                <p className="truncate text-sm text-gray-500">{preview}</p>
+                )}
               </div>
             </button>
           </li>

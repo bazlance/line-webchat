@@ -14,5 +14,6 @@ export type ChatUser = {
   displayName: string;
   pictureUrl: string | null;
   lastMessageAt: string;
+  unreadCount: number;
   lastMessage: ChatMessage | null;
 };
